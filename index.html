@@ -418,7 +418,7 @@
             <div class="scale-status">
               <h3>
                 <span class="status-indicator" id="scale-status-indicator"></span> Weighing Scale
-                (COM: CNCB0)
+                (COM: COM16)
               </h3>
               <button id="connect-scale">Connect Scale</button>
             </div>
@@ -676,7 +676,7 @@
           console.error("Error reading from scale:", error);
           showNotification("Error reading from scale", "error");
         } finally {
-          disconnectScale();
+          //disconnectScale();
         }
       }
 
