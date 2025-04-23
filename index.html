@@ -1,0 +1,878 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Mithai Shop POS</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+      }
+
+      body {
+        background-color: #f5f5f5;
+        padding: 20px;
+      }
+
+      .container {
+        max-width: 1000px;
+        margin: 0 auto;
+        background-color: white;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        border-radius: 10px;
+        overflow: hidden;
+      }
+
+      .header {
+        padding: 20px;
+        background-color: #ff9933;
+        color: white;
+        display: flex;
+        align-items: center;
+      }
+
+      .logo {
+        width: 80px;
+        height: 80px;
+        background-color: white;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-right: 20px;
+        overflow: hidden;
+      }
+
+      .logo svg {
+        width: 60px;
+        height: 60px;
+      }
+
+      .store-info h1 {
+        font-size: 28px;
+        margin-bottom: 5px;
+      }
+
+      .store-info p {
+        font-size: 14px;
+        opacity: 0.9;
+      }
+
+      .date-time {
+        margin-left: auto;
+        text-align: right;
+      }
+
+      .date-time p {
+        font-size: 14px;
+        margin-bottom: 5px;
+      }
+
+      .main {
+        padding: 20px;
+        display: grid;
+        grid-template-columns: 1fr 2fr;
+        gap: 20px;
+      }
+
+      .items-panel {
+        background-color: #f9f9f9;
+        border-radius: 10px;
+        padding: 15px;
+        height: 500px;
+        overflow-y: auto;
+      }
+
+      .items-panel h3 {
+        margin-bottom: 15px;
+        color: #333;
+      }
+
+      .items-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 15px;
+      }
+
+      .item {
+        background-color: white;
+        border-radius: 8px;
+        padding: 10px;
+        cursor: pointer;
+        transition: transform 0.2s;
+        border: 1px solid #eee;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+      }
+
+      .item:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 5px 10px rgba(0, 0, 0, 0.1);
+      }
+
+      .item img {
+        width: 80px;
+        height: 80px;
+        object-fit: cover;
+        border-radius: 5px;
+        margin-bottom: 8px;
+      }
+
+      .item-name {
+        font-weight: 600;
+        font-size: 14px;
+        text-align: center;
+      }
+
+      .item-price {
+        color: #e67e22;
+        font-size: 12px;
+        text-align: center;
+      }
+
+      .bill-panel {
+        display: flex;
+        flex-direction: column;
+      }
+
+      .scale-panel {
+        background-color: #f1f8e9;
+        border-radius: 10px;
+        padding: 15px;
+        margin-bottom: 15px;
+      }
+
+      .scale-panel h3 {
+        color: #33691e;
+        margin-bottom: 10px;
+      }
+
+      .scale-info {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+      }
+
+      .scale-status {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+
+      .status-indicator {
+        width: 12px;
+        height: 12px;
+        border-radius: 50%;
+        background-color: #ccc;
+        margin-right: 5px;
+        display: inline-block;
+      }
+
+      .status-indicator.connected {
+        background-color: #4caf50;
+      }
+
+      .status-indicator.disconnected {
+        background-color: #f44336;
+      }
+
+      .scale-display {
+        flex: 1;
+        border: 2px solid #dcedc8;
+        border-radius: 5px;
+        padding: 10px 15px;
+        font-size: 18px;
+        background-color: white;
+        text-align: right;
+      }
+
+      .scale-instructions {
+        font-size: 12px;
+        color: #666;
+        text-align: center;
+        font-style: italic;
+        margin-top: 5px;
+      }
+
+      button {
+        background-color: #4caf50;
+        color: white;
+        border: none;
+        padding: 10px 15px;
+        border-radius: 5px;
+        cursor: pointer;
+        font-weight: 600;
+      }
+
+      button:hover {
+        background-color: #388e3c;
+      }
+
+      button.secondary {
+        background-color: #ff9933;
+      }
+
+      button.secondary:hover {
+        background-color: #ff8000;
+      }
+
+      button.danger {
+        background-color: #e74c3c;
+      }
+
+      button.danger:hover {
+        background-color: #c0392b;
+      }
+
+      .selected-item {
+        background-color: #e8f5e9;
+        border-radius: 8px;
+        padding: 15px;
+        margin-bottom: 15px;
+      }
+
+      .selected-item p {
+        margin-bottom: 5px;
+      }
+
+      .selected-item-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 10px;
+      }
+
+      .selected-item-header h3 {
+        color: #2e7d32;
+      }
+
+      .weight-price {
+        display: flex;
+        justify-content: space-between;
+        margin-top: 10px;
+      }
+
+      .weight-price p {
+        font-size: 16px;
+        font-weight: 600;
+      }
+
+      .bill-table {
+        flex: 1;
+        border-radius: 10px;
+        overflow: hidden;
+        border: 1px solid #eee;
+      }
+
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        table-layout: fixed;
+      }
+
+      thead {
+        background-color: #f5f5f5;
+      }
+
+      th,
+      td {
+        padding: 12px 15px;
+        text-align: left;
+        border-bottom: 1px solid #eee;
+      }
+
+      tbody tr:hover {
+        background-color: #f9f9f9;
+      }
+
+      .remove-item {
+        color: #e74c3c;
+        cursor: pointer;
+      }
+
+      .remove-item:hover {
+        color: #c0392b;
+      }
+
+      .bill-summary {
+        margin-top: 15px;
+        background-color: #f5f5f5;
+        border-radius: 10px;
+        padding: 15px;
+      }
+
+      .total {
+        display: flex;
+        justify-content: space-between;
+        font-size: 18px;
+        font-weight: 600;
+        margin-bottom: 15px;
+      }
+
+      .actions {
+        display: flex;
+        gap: 10px;
+      }
+
+      .print-button {
+        flex: 1;
+        padding: 12px;
+        font-size: 16px;
+      }
+
+      .notification {
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        background-color: #4caf50;
+        color: white;
+        padding: 15px 20px;
+        border-radius: 5px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        display: none;
+        z-index: 1000;
+        animation: slideIn 0.3s ease-out forwards;
+      }
+
+      @keyframes slideIn {
+        from {
+          transform: translateX(100%);
+          opacity: 0;
+        }
+        to {
+          transform: translateX(0);
+          opacity: 1;
+        }
+      }
+
+      @media print {
+        .items-panel,
+        .scale-panel,
+        .selected-item,
+        .actions {
+          display: none;
+        }
+
+        .container {
+          box-shadow: none;
+        }
+
+        .main {
+          display: block;
+        }
+
+        .bill-panel {
+          width: 100%;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <!-- Header with logo and store info -->
+      <div class="header">
+        <div class="logo">
+          <svg viewBox="0 0 100 100">
+            <path
+              d="M50,10 C30,10 15,25 15,45 C15,65 30,90 50,90 C70,90 85,65 85,45 C85,25 70,10 50,10 Z"
+              fill="#FF9933"
+            />
+            <path
+              d="M50,20 C35,20 25,32.5 25,45 C25,57.5 35,80 50,80 C65,80 75,57.5 75,45 C75,32.5 65,20 50,20 Z"
+              fill="#FFFFFF"
+            />
+            <path
+              d="M50,30 C40,30 35,40 35,45 C35,50 40,70 50,70 C60,70 65,50 65,45 C65,40 60,30 50,30 Z"
+              fill="#138808"
+            />
+          </svg>
+        </div>
+        <div class="store-info">
+          <h1>Sharma's Sweet Shop</h1>
+          <p>123 Gandhi Market, Sector 18, Noida, UP - 201301</p>
+        </div>
+        <div class="date-time">
+          <p id="current-date">Date: --/--/----</p>
+          <p id="current-time">Time: --:-- --</p>
+        </div>
+      </div>
+
+      <!-- Main content -->
+      <div class="main">
+        <!-- Items selection panel -->
+        <div class="items-panel">
+          <h3>Select Items</h3>
+          <div class="items-grid" id="items-grid">
+            <!-- Items will be dynamically populated here -->
+          </div>
+        </div>
+
+        <!-- Billing panel -->
+        <div class="bill-panel">
+          <!-- Scale integration -->
+          <div class="scale-panel">
+            <div class="scale-status">
+              <h3>
+                <span class="status-indicator" id="scale-status-indicator"></span> Weighing Scale
+                (COM: COM6)
+              </h3>
+              <button id="connect-scale">Connect Scale</button>
+            </div>
+            <div class="scale-info">
+              <div class="scale-display" id="scale-weight">0.000 kg</div>
+              <p class="scale-instructions">
+                Press the button on your scale to send weight reading
+              </p>
+            </div>
+          </div>
+
+          <!-- Selected item -->
+          <div class="selected-item" id="selected-item-panel" style="display: none">
+            <div class="selected-item-header">
+              <h3 id="selected-item-name">Item Name</h3>
+              <button class="secondary" id="add-to-bill">Add to Bill</button>
+            </div>
+            <p id="selected-item-rate">Rate: ₹0.00 per gram</p>
+            <div class="weight-price">
+              <p id="selected-item-weight">Weight: 0g</p>
+              <p id="selected-item-price">Price: ₹0.00</p>
+            </div>
+          </div>
+
+          <!-- Bill table -->
+          <div class="bill-table">
+            <table>
+              <thead>
+                <tr>
+                  <th width="40%">Item</th>
+                  <th width="20%">Weight</th>
+                  <th width="20%">Price</th>
+                  <th width="20%">Action</th>
+                </tr>
+              </thead>
+              <tbody id="bill-items">
+                <!-- Bill items will be added here -->
+              </tbody>
+            </table>
+          </div>
+
+          <!-- Bill total and actions -->
+          <div class="bill-summary">
+            <div class="total">
+              <span>Total Amount</span>
+              <span id="total-amount">₹0.00</span>
+            </div>
+            <div class="actions">
+              <button class="danger" id="clear-bill">Clear Bill</button>
+              <button class="print-button" id="print-bill">Print Bill</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Notification popup -->
+    <div class="notification" id="notification"></div>
+
+    <script>
+      // Store catalog with sweet items
+      const items = [
+        {
+          id: 1,
+          name: "Jalebi",
+          image:
+            "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRhJTonRLOWPIGS08TEWGiTidAGrTkB6-ycfw&s",
+          rate: 2.5, // ₹2.5 per gram
+        },
+        {
+          id: 2,
+          name: "Gulab Jamun",
+          image:
+            "https://www.vegrecipesofindia.com/wp-content/uploads/2022/10/gulab-jamun-recipe-01.jpg",
+          rate: 3.0,
+        },
+        {
+          id: 3,
+          name: "Rasgulla",
+          image:
+            "https://photos.bigoven.com/recipe/hero/easy-rasgulla-recipe-dff534.jpg?h=300&w=300",
+          rate: 2.8,
+        },
+        {
+          id: 4,
+          name: "Barfi",
+          image:
+            "https://www.tradeindia.com/_next/image/?url=https%3A%2F%2Ftiimg.tistatic.com%2Ffp%2F1%2F007%2F788%2Ftasty-and-delicious-no-artificial-color-indian-sweet-plain-white-barfi-indian-dish-106.jpg&w=256&q=75",
+          rate: 4.5,
+        },
+        {
+          id: 5,
+          name: "Ladoo",
+          image:
+            "https://images.stockcake.com/public/8/a/e/8ae08958-0282-4418-9b9e-034aab7a0195_medium/golden-laddu-treasure-stockcake.jpg",
+          rate: 3.2,
+        },
+        {
+          id: 6,
+          name: "Kaju Katli",
+          image:
+            "https://www.tradeindia.com/_next/image/?url=https%3A%2F%2Ftiimg.tistatic.com%2Ffp%2F1%2F005%2F325%2Ftasty-kaju-pista-barfi-903.jpg&w=256&q=75",
+          rate: 7.5,
+        },
+        {
+          id: 7,
+          name: "Peda",
+          image:
+            "https://www.tradeindia.com/_next/image/?url=https%3A%2F%2Ftiimg.tistatic.com%2Ffp%2F1%2F007%2F859%2F1-kilogram-packaging-size-sweet-and-dry-fruits-flavor-round-malai-peda-565.jpg&w=256&q=75",
+          rate: 3.8,
+        },
+        {
+          id: 8,
+          name: "Mysore Pak",
+          image: "https://images.meesho.com/images/products/466315109/az63t_256.webp",
+          rate: 4.0,
+        },
+      ];
+
+      // COM Port and Scale Variables
+      let port = null;
+      let reader = null;
+      let isConnected = false;
+
+      // Current state
+      let selectedItem = null;
+      let currentWeight = 0;
+      let billItems = [];
+      let totalAmount = 0;
+
+      // DOM elements
+      const itemsGrid = document.getElementById("items-grid");
+      const selectedItemPanel = document.getElementById("selected-item-panel");
+      const selectedItemName = document.getElementById("selected-item-name");
+      const selectedItemRate = document.getElementById("selected-item-rate");
+      const selectedItemWeight = document.getElementById("selected-item-weight");
+      const selectedItemPrice = document.getElementById("selected-item-price");
+      const scaleWeight = document.getElementById("scale-weight");
+      const scaleStatusIndicator = document.getElementById("scale-status-indicator");
+      const connectScaleButton = document.getElementById("connect-scale");
+      const billItemsTable = document.getElementById("bill-items");
+      const totalAmountDisplay = document.getElementById("total-amount");
+      const currentDateEl = document.getElementById("current-date");
+      const currentTimeEl = document.getElementById("current-time");
+      const notification = document.getElementById("notification");
+
+      // Initialize the date and time
+      function updateDateTime() {
+        const now = new Date();
+
+        // Format date as DD/MM/YYYY
+        const dateFormatted = `${now.getDate().toString().padStart(2, "0")}/${(now.getMonth() + 1)
+          .toString()
+          .padStart(2, "0")}/${now.getFullYear()}`;
+
+        // Format time as HH:MM AM/PM
+        let hours = now.getHours();
+        const ampm = hours >= 12 ? "PM" : "AM";
+        hours = hours % 12;
+        hours = hours ? hours : 12; // Convert '0' to '12'
+        const minutes = now.getMinutes().toString().padStart(2, "0");
+        const timeFormatted = `${hours}:${minutes} ${ampm}`;
+
+        currentDateEl.textContent = `Date: ${dateFormatted}`;
+        currentTimeEl.textContent = `Time: ${timeFormatted}`;
+      }
+
+      // Show notification
+      function showNotification(message, type = "success") {
+        notification.textContent = message;
+        notification.style.backgroundColor = type === "success" ? "#4CAF50" : "#f44336";
+        notification.style.display = "block";
+
+        setTimeout(() => {
+          notification.style.display = "none";
+        }, 3000);
+      }
+
+      // Update time every second
+      setInterval(updateDateTime, 1000);
+      updateDateTime(); // Initial update
+
+      // Connect to Scale (Serial Port)
+      async function connectToScale() {
+        try {
+          // Request serial port access
+          port = await navigator.serial.requestPort();
+          await port.open({ baudRate: 9600 }); // Most scales use 9600 baud rate
+
+          // Setup reader for incoming data
+          const decoder = new TextDecoder();
+          reader = port.readable.getReader();
+
+          // Update UI
+          isConnected = true;
+          scaleStatusIndicator.classList.remove("disconnected");
+          scaleStatusIndicator.classList.add("connected");
+          connectScaleButton.textContent = "Disconnect";
+          showNotification("Scale connected successfully");
+
+          // Start reading data
+          readScaleData();
+        } catch (error) {
+          console.error("Error connecting to scale:", error);
+          showNotification("Failed to connect to scale. " + error.message, "error");
+          disconnectScale();
+        }
+      }
+
+      // Disconnect from scale
+      async function disconnectScale() {
+        if (reader) {
+          try {
+            await reader.cancel();
+            reader.releaseLock();
+          } catch (error) {
+            console.error("Error releasing reader:", error);
+          }
+          reader = null;
+        }
+
+        if (port) {
+          try {
+            await port.close();
+          } catch (error) {
+            console.error("Error closing port:", error);
+          }
+          port = null;
+        }
+
+        isConnected = false;
+        scaleStatusIndicator.classList.remove("connected");
+        scaleStatusIndicator.classList.add("disconnected");
+        connectScaleButton.textContent = "Connect Scale";
+      }
+
+      // Read data from scale
+      async function readScaleData() {
+        if (!reader) return;
+
+        try {
+          while (true) {
+            const { value, done } = await reader.read();
+            if (done) {
+              // Reader has been canceled
+              break;
+            }
+
+            // Process the received data
+            const decoder = new TextDecoder();
+            const text = decoder.decode(value);
+            processScaleData(text);
+          }
+        } catch (error) {
+          console.error("Error reading from scale:", error);
+          showNotification("Error reading from scale", "error");
+        } finally {
+          disconnectScale();
+        }
+      }
+
+      // Process data from scale
+      function processScaleData(data) {
+        // Scale data format might vary. This is a simplistic example.
+        // You may need to adjust based on your scale's output format
+
+        // Remove any non-numeric chars except decimal point
+        console.log("Raw scale data:", data);
+        const cleanData = data.replace(/[^\d.]/g, "");
+
+        if (cleanData && !isNaN(parseFloat(cleanData))) {
+          currentWeight = parseFloat(cleanData);
+          scaleWeight.textContent = `${currentWeight.toFixed(3)} kg`;
+          updateSelectedItemCalculation();
+          showNotification("New weight received from scale");
+        }
+      }
+
+      // Toggle scale connection
+      function toggleScaleConnection() {
+        if (isConnected) {
+          disconnectScale();
+        } else {
+          connectToScale();
+        }
+      }
+
+      // Populate items grid
+      function populateItems() {
+        itemsGrid.innerHTML = "";
+
+        items.forEach((item) => {
+          const itemElement = document.createElement("div");
+          itemElement.className = "item";
+          itemElement.innerHTML = `
+          <img src="${item.image}" alt="${item.name}">
+          <div class="item-name">${item.name}</div>
+          <div class="item-price">₹${item.rate.toFixed(2)}/g</div>
+        `;
+
+          itemElement.addEventListener("click", () => selectItem(item));
+
+          itemsGrid.appendChild(itemElement);
+        });
+      }
+
+      // Select an item
+      function selectItem(item) {
+        selectedItem = item;
+        selectedItemPanel.style.display = "block";
+        selectedItemName.textContent = item.name;
+        selectedItemRate.textContent = `Rate: ₹${item.rate.toFixed(2)} per gram`;
+
+        updateSelectedItemCalculation();
+      }
+
+      // Update calculation for selected item
+      function updateSelectedItemCalculation() {
+        if (!selectedItem) return;
+
+        selectedItemWeight.textContent = `Weight: ${currentWeight.toFixed(3)}kg (${(
+          currentWeight * 1000
+        ).toFixed(0)}g)`;
+        const price = calculatePrice(selectedItem.rate, currentWeight);
+        selectedItemPrice.textContent = `Price: ₹${price.toFixed(2)}`;
+      }
+
+      // Calculate price based on rate and weight
+      function calculatePrice(rate, weight) {
+        // Convert kg to grams and calculate price
+        return rate * (weight * 1000);
+      }
+
+      // Add item to bill
+      function addItemToBill() {
+        if (!selectedItem || currentWeight <= 0) {
+          showNotification("Please select an item and get weight reading first", "error");
+          return;
+        }
+
+        const price = calculatePrice(selectedItem.rate, currentWeight);
+
+        const billItem = {
+          id: Date.now(), // unique ID for removal purposes
+          item: selectedItem,
+          weight: currentWeight,
+          price: price,
+        };
+
+        billItems.push(billItem);
+        updateBillTable();
+        updateTotal();
+
+        // Reset selection but keep the weight for next item
+        selectedItemPanel.style.display = "none";
+        selectedItem = null;
+
+        showNotification("Item added to bill");
+      }
+
+      // Remove item from bill
+      function removeItemFromBill(id) {
+        billItems = billItems.filter((item) => item.id !== id);
+        updateBillTable();
+        updateTotal();
+        showNotification("Item removed from bill");
+      }
+
+      // Update bill table
+      function updateBillTable() {
+        billItemsTable.innerHTML = "";
+
+        if (billItems.length === 0) {
+          const emptyRow = document.createElement("tr");
+          emptyRow.innerHTML = `
+          <td colspan="4" style="text-align: center;">No items added yet</td>
+        `;
+          billItemsTable.appendChild(emptyRow);
+          return;
+        }
+
+        billItems.forEach((item) => {
+          const row = document.createElement("tr");
+          row.innerHTML = `
+          <td>${item.item.name}</td>
+          <td>${item.weight.toFixed(3)}kg</td>
+          <td>₹${item.price.toFixed(2)}</td>
+          <td><span class="remove-item" data-id="${item.id}">❌</span></td>
+        `;
+          billItemsTable.appendChild(row);
+        });
+
+        // Attach event listeners to remove buttons
+        document.querySelectorAll(".remove-item").forEach((button) => {
+          button.addEventListener("click", (e) => {
+            const id = parseInt(e.target.getAttribute("data-id"));
+            removeItemFromBill(id);
+          });
+        });
+      }
+
+      // Update total amount
+      function updateTotal() {
+        totalAmount = billItems.reduce((sum, item) => sum + item.price, 0);
+        totalAmountDisplay.textContent = `₹${totalAmount.toFixed(2)}`;
+      }
+
+      // Clear bill
+      function clearBill() {
+        billItems = [];
+        updateBillTable();
+        updateTotal();
+        showNotification("Bill cleared");
+      }
+
+      // Print bill
+      function printBill() {
+        if (billItems.length === 0) {
+          showNotification("Please add items to the bill before printing", "error");
+          return;
+        }
+
+        window.print();
+      }
+
+      // Check if Web Serial API is available
+      function checkSerialSupport() {
+        if (!("serial" in navigator)) {
+          showNotification(
+            "Web Serial API is not supported in your browser. Please use Chrome or Edge.",
+            "error"
+          );
+          connectScaleButton.disabled = true;
+          scaleStatusIndicator.classList.add("disconnected");
+        } else {
+          scaleStatusIndicator.classList.add("disconnected");
+        }
+      }
+
+      // Initialize application
+      function init() {
+        populateItems();
+        updateBillTable();
+        checkSerialSupport();
+
+        // Event listeners
+        connectScaleButton.addEventListener("click", toggleScaleConnection);
+        document.getElementById("add-to-bill").addEventListener("click", addItemToBill);
+        document.getElementById("clear-bill").addEventListener("click", clearBill);
+        document.getElementById("print-bill").addEventListener("click", printBill);
+      }
+
+      // Start the application
+      init();
+    </script>
+  </body>
+</html>
