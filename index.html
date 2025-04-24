@@ -14,7 +14,7 @@
 
       body {
         background-color: #f5f5f5;
-        padding: 20px;
+        padding: 10px;
       }
 
       .container {
@@ -28,7 +28,7 @@
 
       .header {
         padding: 20px;
-        background-color: #ff9933;
+        background-color: #d62828;
         color: white;
         display: flex;
         align-items: center;
@@ -82,7 +82,7 @@
         background-color: #f9f9f9;
         border-radius: 10px;
         padding: 15px;
-        height: 500px;
+        height: 600px;
         overflow-y: auto;
       }
 
@@ -161,6 +161,7 @@
         display: flex;
         justify-content: space-between;
         align-items: center;
+        margin-bottom: 10px;
       }
 
       .status-indicator {
@@ -213,11 +214,11 @@
       }
 
       button.secondary {
-        background-color: #ff9933;
+        background-color: #d62828;
       }
 
       button.secondary:hover {
-        background-color: #ff8000;
+        background-color: #ab2020;
       }
 
       button.danger {
@@ -392,12 +393,12 @@
           </svg>
         </div>
         <div class="store-info">
-          <h1>Sharma's Sweet Shop</h1>
-          <p>123 Gandhi Market, Sector 18, Noida, UP - 201301</p>
+          <h1>Bombay Sweet Shop</h1>
+          <h3>Mumbai</h3>
         </div>
         <div class="date-time">
-          <p id="current-date">Date: --/--/----</p>
-          <p id="current-time">Time: --:-- --</p>
+          <h4 id="current-date">Date: --/--/----</h4>
+          <h4 id="current-time">Time: --:-- --</h4>
         </div>
       </div>
 
@@ -756,7 +757,7 @@
       function addItemToBill() {
         if (!selectedItem || currentWeight <= 0) {
           showNotification("Please select an item and get weight reading first", "error");
-          return;
+          //return;
         }
 
         const price = calculatePrice(selectedItem.rate, currentWeight);
